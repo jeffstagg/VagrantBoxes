@@ -1,0 +1,23 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "precise64"
+  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
+  config.vm.synced_folder "./source", "/home/vagrant/skylog"
+
+  config.vm.provider "virtualbox" do |v|
+    v.customize ["modifyvm", :id, "--memory", 2048]
+    v.name = "rails3"
+  end
+
+  config.vm.define "rails3" do |config|
+    config.vm.network :forwarded_port, guest: 3000, host: 3000  # rails
+
+    config.vm.provision :fabric do |fab|
+      fab.tasks = ["provision"]
+    end
+  end
+end
